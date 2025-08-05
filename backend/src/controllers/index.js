@@ -1,4 +1,5 @@
 module.exports={
     ApplicationController:require("./applicationController"),
-    JobController:require('./jobController')
+    JobController:require('./jobController'),
+    AuthController:require('./authController')
 }

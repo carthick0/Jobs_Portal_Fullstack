@@ -1,4 +1,4 @@
-const { ApplicationService } = require("../services"); // Adjust path as needed
+const { ApplicationService } = require("../service");
 
 // Apply to a job
 async function applyToJob(req, res) {
