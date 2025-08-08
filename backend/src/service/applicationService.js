@@ -1,17 +1,37 @@
-const ApplicationRepository = require("../repositories/applicationRepository");
+const applicationRepository = require("../repositories/applicationRepository");
 
-const applicationRepository=new ApplicationRepository();
+async function applyJob(jobId, data) {
+  try {
+  const response = await applicationRepository.create({
+  job: jobId,
+  applicantName: data.applicantName,
+  applicantEmail: data.applicantEmail,
+  resumeLink: data.resumeLink
+});
 
-async function applyJob(jobId,data){
+    return response;
+  } catch (error) {
+    console.log("Apply Job Error at service layer", error);
+    throw error;
+  }
+}
+async function getApplicationsForJob(jobId){
     try {
-        const response=await applicationRepository.create({jobId,data});
-        return response;
+        const res=await applicationRepository.findByJob(jobId);
+        return res;
     } catch (error) {
-        console.log("Apply Job Error at service layer",error);
-        throw error;
+         console.log("getApplicationsForJob Error at service layer", error);
+         throw error;
     }
 }
-
-module.exports={
-    applyJob
+async function getApplicationsForUser(email) {
+    try {
+        const res=applicationRepository.findByApplicantEmail(email);
+        return res;
+    } catch (error) {
+        console.log("getApplicationsForUser Error at service")
+    }
 }
+module.exports = {
+  applyJob
+};

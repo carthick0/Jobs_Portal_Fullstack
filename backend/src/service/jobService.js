@@ -1,6 +1,4 @@
-const JobRepository = require("../repositories/jobsRepository");
-
-const jobsRepository = new JobRepository();
+const jobsRepository = require('../repositories/jobRepository');
 
 async function createJob(data){
     try {
