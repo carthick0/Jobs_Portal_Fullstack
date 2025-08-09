@@ -11,15 +11,15 @@ const applyRoutes = require('./routes/applyRoutes');
 
 const app = express();
 
-
-const isProd = process.env.VERCEL_ENV === "production";
-const frontendOrigin = "https://jobs-portal-fullstack-1sfz.vercel.app";
-
+const allowedOrigins = [
+  "http://localhost:5173",   // dev
+  "https://jobs-portal-fullstack-1sfz.vercel.app" // prod
+];
 app.use(cors({
-  origin: frontendOrigin, 
-  credentials: true,
-  methods: ["GET","POST","PUT","DELETE"],
+  origin: ["http://localhost:5173", "https://jobs-portal-fullstack-1sfz.vercel.app"],
+  methods: "GET,POST,PUT,DELETE",
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
 
 app.use(express.json());
@@ -32,7 +32,7 @@ app.use('/api/auth', authRoutes);
 
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`Mode: ${isProd ? "Production" : "Development"}`);
+  
   try {
     await connectDB();
     console.log('✅ DB connected successfully');

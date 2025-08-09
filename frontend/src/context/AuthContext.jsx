@@ -4,7 +4,7 @@ import api from "../api";
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,8 +15,7 @@ const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       const res = await api.get("/auth/check");
-      setRole(res.data.data?.role || res.data.role);
-      console.log("User role set to:", res.data.role);
+      setRole(res.data.role);
     } catch {
       setRole(null);
     } finally {
@@ -39,6 +38,4 @@ const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export default AuthProvider;
+}

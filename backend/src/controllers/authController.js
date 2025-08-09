@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { ADMIN_EMAIL, ADMIN_PASSWORD, JWT_SECRET } = require('../config/serverConfig');
 
-const isProd = process.env.VERCEL_ENV === "production";
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -10,15 +8,7 @@ const login = async (req, res) => {
 
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       const token = jwt.sign({ role: 'admin', email }, JWT_SECRET, { expiresIn: '1d' });
-
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? 'none' : 'lax',
-        maxAge: 24 * 60 * 60 * 1000
-      });
-
-      return res.json({ message: 'Login successful', role: 'admin' });
+      return res.json({ token, role: 'admin' });
     } else {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -28,24 +18,22 @@ const login = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax'
-  });
-  return res.json({ message: 'Logged out' });
-};
-
 const checkAuth = (req, res) => {
   try {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: 'Not logged in' });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: 'No token provided' });
+
+    const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET);
-    return res.json({ role: decoded.role, email: decoded.email }); // flat object
+
+    return res.json({ role: decoded.role, email: decoded.email });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token' });
   }
+};
+
+const logout = (req, res) => {
+  return res.json({ message: 'Logged out' });
 };
 
 module.exports = {
