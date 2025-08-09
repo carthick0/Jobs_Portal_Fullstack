@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 const cors = require("cors");
 app.use(cors({
-  origin: "https://jobs-portal-fullstack-o8ej.vercel.app",
+  origin: "https://jobs-portal-fullstack-dw4g.vercel.app",
   credentials: true
 }));
 

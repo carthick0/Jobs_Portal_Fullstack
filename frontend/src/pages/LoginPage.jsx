@@ -6,7 +6,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login, testCredentials } = useContext(AuthContext); // assuming you provide testCredentials here
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -15,9 +15,16 @@ export default function LoginPage() {
 
     const success = login(email, password);
     if (success) {
-      navigate("/admin/jobs"); // Redirect to admin dashboard
+      navigate("/admin/jobs");
     } else {
       setError("Invalid email or password");
+    }
+  };
+
+  const handleFillTestCredentials = () => {
+    if (testCredentials) {
+      setEmail(testCredentials.email);
+      setPassword(testCredentials.password);
     }
   };
 
@@ -30,7 +37,7 @@ export default function LoginPage() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full p-3 mb-4 border rounded"
           required
         />
@@ -38,7 +45,7 @@ export default function LoginPage() {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full p-3 mb-6 border rounded"
           required
         />
@@ -47,6 +54,14 @@ export default function LoginPage() {
           className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
         >
           Login
+        </button>
+        {/* Test Credentials Button */}
+        <button
+          type="button"
+          onClick={handleFillTestCredentials}
+          className="w-full mt-4 bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
+        >
+          Use Test Credentials
         </button>
       </form>
     </div>

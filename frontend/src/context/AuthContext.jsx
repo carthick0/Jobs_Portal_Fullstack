@@ -4,10 +4,8 @@ import React, { createContext, useState } from "react";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // user will be { role: "admin" } or null
-
+  const [user, setUser] = useState(null); 
   const login = (email, password) => {
-    // Hardcoded admin check - replace with real API if needed
     if (email === "admin@example.com" && password === "admin123") {
       setUser({ role: "admin" });
       return true;
@@ -19,8 +17,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const testCredentials = {
+    email: "admin@example.com",
+    password: "admin123",
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, testCredentials }}>
       {children}
     </AuthContext.Provider>
   );
