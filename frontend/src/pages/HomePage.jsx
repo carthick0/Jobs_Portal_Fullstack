@@ -22,19 +22,22 @@ export default function HomePage() {
   useEffect(() => {
     fetchJobs();
 
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-    setFadeIn(true);
+    // Only show quotes if NOT admin
+    if (role !== "admin") {
+      setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+      setFadeIn(true);
 
-    const interval = setInterval(() => {
-      setFadeIn(false);
-      setTimeout(() => {
-        setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-        setFadeIn(true);
-      }, 300);
-    }, 7000);
+      const interval = setInterval(() => {
+        setFadeIn(false);
+        setTimeout(() => {
+          setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+          setFadeIn(true);
+        }, 300);
+      }, 7000);
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [role]);
 
   const fetchJobs = async () => {
     try {
@@ -63,31 +66,33 @@ export default function HomePage() {
 
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      {/* Quote Section */}
-      <section className="h-screen flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
-        <h1
-          className={`text-4xl md:text-6xl font-extrabold text-gray-800 max-w-4xl px-4 leading-snug
-          transition-opacity duration-500 ease-in-out
-          ${fadeIn ? "opacity-100" : "opacity-0"}`}
-          style={{ textShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
-        >
-          {quote}
-        </h1>
-
-        <div className="mt-20 animate-bounce text-blue-600 flex flex-col items-center select-none">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-12 w-12"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+      {/* Quote Section - hidden for admin */}
+      {role !== "admin" && (
+        <section className="h-screen flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
+          <h1
+            className={`text-4xl md:text-6xl font-extrabold text-gray-800 max-w-4xl px-4 leading-snug
+            transition-opacity duration-500 ease-in-out
+            ${fadeIn ? "opacity-100" : "opacity-0"}`}
+            style={{ textShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-          <p className="mt-2 font-semibold text-blue-700 tracking-wide">Scroll Down</p>
-        </div>
-      </section>
+            {quote}
+          </h1>
+
+          <div className="mt-20 animate-bounce text-blue-600 flex flex-col items-center select-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-12 w-12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+            <p className="mt-2 font-semibold text-blue-700 tracking-wide">Scroll Down</p>
+          </div>
+        </section>
+      )}
 
       {/* Jobs Section */}
       <section className="max-w-7xl mx-auto px-6 py-10">

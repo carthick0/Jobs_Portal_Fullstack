@@ -6,9 +6,18 @@ const login = async (req, res) => {
     const { email, password } = req.body || {};
     if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
 
+    // fixed admin credentials (simple equality check)
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       const token = jwt.sign({ role: 'admin', email }, JWT_SECRET, { expiresIn: '1d' });
-      return res.json({ token, role: 'admin' });
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: isProduction,           // true in prod (HTTPS), false in dev (HTTP)
+        sameSite: isProduction ? 'none' : 'lax',  // 'none' for cross-site cookies in prod
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      return res.json({ message: 'Login successful', role: 'admin' });
     } else {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -18,22 +27,20 @@ const login = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  res.clearCookie('token');
+  return res.json({ message: 'Logged out' });
+};
+
 const checkAuth = (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ message: 'No token provided' });
-
-    const token = authHeader.split(' ')[1];
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: 'Not logged in' });
     const decoded = jwt.verify(token, JWT_SECRET);
-
-    return res.json({ role: decoded.role, email: decoded.email });
+    return res.json({ role: decoded.role || null, email: decoded.email || null });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token' });
   }
-};
-
-const logout = (req, res) => {
-  return res.json({ message: 'Logged out' });
 };
 
 module.exports = {

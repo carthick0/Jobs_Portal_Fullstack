@@ -1,19 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import HomePage from "./pages/HomePage";
-import PostJob from "./pages/PostJob";
 import LoginPage from "./pages/LoginPage";
+import AdminJobsPage from "./pages/AdminJobsPage"; // the admin job list page
+import PostJob from "./pages/PostJob";
+import EditPage from "./pages/EditPage";
+import HomePage from "./pages/HomePage";
+import Navbar from "./components/Navbar"
 import ApplyPage from "./pages/ApplyPage";
-
 export default function App() {
   return (
     <Router>
-      <Navbar />
+      <Navbar/>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/post" element={<PostJob />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/apply/:jobId" element={<ApplyPage />} />
+        <Route path="/admin/jobs" element={<AdminJobsPage />} />
+        <Route path="/post" element={<PostJob />} />
+        <Route path="/edit/:id" element={<EditPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="apply/:jobId" element={<ApplyPage />} />
       </Routes>
     </Router>
   );

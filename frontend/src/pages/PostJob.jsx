@@ -1,109 +1,72 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function PostJob() {
-  const [form, setForm] = useState({
-    title: "",
-    company: "",
-    location: "",
-    description: "",
-  });
-  const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState("");
+  const [job, setJob] = useState({ title: "", company: "", location: "", description: "" });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const validate = () => {
-    let newErrors = {};
-    if (!form.title.trim()) newErrors.title = "Title is required";
-    if (!form.company.trim()) newErrors.company = "Company is required";
-    if (!form.location.trim()) newErrors.location = "Location is required";
-    if (!form.description.trim()) newErrors.description = "Description is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (e) => {
+    setJob({ ...job, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    setError("");
 
-    axios
-      .post("https://jobs-portal-backend-t3m4.onrender.com/api/jobs", form, { withCredentials: true })
-      .then(() => {
-        setSuccessMessage("✅ Job posted successfully!");
-        setForm({ title: "", company: "", location: "", description: "" });
-
-        // Redirect after 2 seconds
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
-      })
-      .catch(() => {
-        setSuccessMessage("❌ Failed to post job. Please try again.");
+    try {
+      await axios.post("https://jobs-portal-backend-t3m4.onrender.com/api/jobs", job, {
+        withCredentials: true,
       });
+      navigate("/admin/jobs");
+    } catch {
+      setError("Failed to post job");
+    }
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white shadow rounded-lg mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Post a Job</h1>
-      {successMessage && (
-        <p
-          className={`mb-4 p-3 rounded-lg text-center ${
-            successMessage.startsWith("✅")
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {successMessage}
-        </p>
-      )}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div>
-          <input
-            className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Job Title"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
-          {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
-        </div>
+    <div className="max-w-md mx-auto p-6 bg-white rounded shadow mt-10">
+      <h1 className="text-2xl font-bold mb-6">Post New Job</h1>
 
-        <div>
-          <input
-            className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Company Name"
-            value={form.company}
-            onChange={(e) => setForm({ ...form, company: e.target.value })}
-          />
-          {errors.company && <p className="text-red-500 text-sm">{errors.company}</p>}
-        </div>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
 
-        <div>
-          <input
-            className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Location"
-            value={form.location}
-            onChange={(e) => setForm({ ...form, location: e.target.value })}
-          />
-          {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
-        </div>
-
-        <div>
-          <textarea
-            className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Job Description"
-            rows="4"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          ></textarea>
-          {errors.description && (
-            <p className="text-red-500 text-sm">{errors.description}</p>
-          )}
-        </div>
-
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          name="title"
+          value={job.title}
+          onChange={handleChange}
+          placeholder="Job Title"
+          required
+          className="w-full p-3 border rounded"
+        />
+        <input
+          name="company"
+          value={job.company}
+          onChange={handleChange}
+          placeholder="Company"
+          required
+          className="w-full p-3 border rounded"
+        />
+        <input
+          name="location"
+          value={job.location}
+          onChange={handleChange}
+          placeholder="Location"
+          required
+          className="w-full p-3 border rounded"
+        />
+        <textarea
+          name="description"
+          value={job.description}
+          onChange={handleChange}
+          placeholder="Description"
+          required
+          className="w-full p-3 border rounded h-32"
+        />
         <button
           type="submit"
-          className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200"
+          className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
         >
           Post Job
         </button>

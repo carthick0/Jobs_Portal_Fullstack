@@ -1,40 +1,26 @@
-import { createContext, useState, useEffect } from "react";
-import api from "../api";
+import React, { createContext, useState } from "react";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // user will be { role: "admin" } or null
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const res = await api.get("/auth/check");
-      setRole(res.data.role);
-    } catch {
-      setRole(null);
-    } finally {
-      setLoading(false);
+  const login = (email, password) => {
+    // Hardcoded admin check - replace with real API if needed
+    if (email === "admin@example.com" && password === "admin123") {
+      setUser({ role: "admin" });
+      return true;
     }
+    return false;
   };
 
-  const login = async (email, password) => {
-    await api.post("/auth/login", { email, password });
-    await checkAuth();
-  };
-
-  const logout = async () => {
-    await api.post("/auth/logout");
-    setRole(null);
+  const logout = () => {
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ role, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
