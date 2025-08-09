@@ -41,7 +41,8 @@ async function updateJob(id,data){
 
 async function deleteJob(id){
     try {
-        const response=await jobsRepository.delete(id)
+        const response=await jobsRepository.delete(id);
+        return response;
     } catch (error) {
         console.log("Delete Jobs Error at service layer",error);
         throw error;

@@ -10,11 +10,11 @@ const login = async (req, res) => {
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       const token = jwt.sign({ role: 'admin', email }, JWT_SECRET, { expiresIn: '1d' });
       res.cookie('token', token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000
-      });
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // false for localhost
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    });
       return res.json({ message: 'Login successful', role: 'admin' });
     } else {
       return res.status(401).json({ message: 'Invalid credentials' });
